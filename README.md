@@ -5,7 +5,7 @@ This is a langchain for some mysterious hackathon.
 Currently, I build a sample Langchain application to see how langchain communicate with **PDF file** and response with help from **OpenAI API**.
 
 ## How to start?
-1. Create `.env` file with your own "**OPEN_API_KEY**" and "**TAVILY_API_KEY**".
+1. Create `.env` file with your own "**OPENAI_API_KEY**" and "**TAVILY_API_KEY**".
 2. Start LangServe: `python example.py`
 3. Go to `http://localhost:8000` to how langchain intermediate steps work. You can ask questions about DARPA internet protocol design.
 
