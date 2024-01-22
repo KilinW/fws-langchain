@@ -1,15 +1,15 @@
 # free-wang-square-lc
 This is a langchain for some mysterious hackathon.
 
-# Demo
+## Demo
 Currently, I build a sample Langchain application to see how langchain communicate with **PDF file** and response with help from **OpenAI API**.
 
-## How to start?
+### How to start?
 1. Create `.env` file with your own "**OPENAI_API_KEY**" and "**TAVILY_API_KEY**".
 2. Start LangServe: `python example.py`
 3. Go to `http://localhost:8000` to how langchain intermediate steps work. You can ask questions about DARPA internet protocol design.
 
-## Structure
+### Structure
 1. `/sample`: here comes some PDF files we want our chatbot knows.
 2. `example.py`: the langchain server, currently does:
     - Load PDF file
