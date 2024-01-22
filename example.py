@@ -20,12 +20,15 @@ from langchain.pydantic_v1 import BaseModel, Field
 from langchain_core.messages import BaseMessage
 from langserve import add_routes
 
+from src.utils.io import Input, Output
+
 load_dotenv()
 
 # 1. Load Retriever (PDF)
 loader = PyPDFLoader('./sample/The Design Philosophy of the DARPA Internet Protocols.pdf')
 pages = loader.load_and_split()
-faiss_index = FAISS.from_documents(pages, OpenAIEmbeddings())
+embeddings = OpenAIEmbeddings(openai_api_key=os.getenv("OPENAI_API_KEY"))
+faiss_index = FAISS.from_documents(pages, embeddings)
 retriever = faiss_index.as_retriever()
 # docs = faiss_index.similarity_search("What is the design philosophy of DARPA Internet Protocols?", k=2)
 # for doc in docs:
@@ -63,22 +66,6 @@ app = FastAPI(
   version="1.0",
   description="A simple API server using LangChain's Runnable interfaces",
 )
-
-# 5. Adding chain route
-
-# We need to add these input/output schemas because the current AgentExecutor
-# is lacking in schemas.
-
-class Input(BaseModel):
-  input: str
-  chat_history: List[BaseMessage] = Field(
-    ...,
-    extra={"widget": {"type": "chat", "input": "location"}},
-  )
-
-
-class Output(BaseModel):
-  output: str
 
 add_routes(
   app,
