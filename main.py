@@ -3,12 +3,14 @@ Description: Entrypoint for the application.
 """
 
 from dotenv import load_dotenv
+import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from typing import List
-from utils.io import Input, Output, ChatRequest
+from utils.io import Input, Output, ChatRequest, FileUploadRequest
 from ingest import ingest_docs
 from chain import get_chain
+from upload import upload_to_gcs
 
 load_dotenv()
 
@@ -45,9 +47,10 @@ async def feedback(request: Input) -> Output:
   return Output(output="OK")
 
 @app.post("/upload_file/")
-async def upload_file(request: Input) -> Output:
+async def upload_file(request: FileUploadRequest):
   """Handle files upload to GCS"""
-  return Output(output="OK")
+  upload_to_gcs(project_id=os.getenv("GOOGLE_CLOUD_PROJECT_ID"), url=request.url, file_name=request.file_name)
+  return {"message": "file uploaded successfully"}
 
 
 if __name__ == "__main__":
