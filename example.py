@@ -32,52 +32,39 @@ from src.utils.io import Input, Output, ChatRequest
 
 load_dotenv()
 
-# 1. Load Retriever (PDF)
+# 1. Load PDF
 loader = PyPDFLoader('./sample/機台型號_ x-100.pdf')
 text_spilter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=300)
 splits = loader.load_and_split(text_splitter=text_spilter)
 # embeddings = OpenAIEmbeddings(openai_api_key=os.getenv("OPENAI_API_KEY"))
 embeddings = HuggingFaceEmbeddings()
 vectorstore = FAISS.from_documents(splits, embeddings)
-retriever = vectorstore.as_retriever()
-# retriever = vectorstore.as_retriever(search_type="similarity", search_kwargs={"k": 6})
+# retriever = vectorstore.as_retriever()
 
-# 2. Create Agent
-llm = HuggingFaceHub(
-  repo_id="mistralai/Mixtral-8x7B-Instruct-v0.1",
-  model_kwargs={"temperature":0.8, "max_length":1000},
-)
-
+# 2. Design prompting
 prompt = PromptTemplate(
    input_variables = ["input", "chat_history", "retrieved_document"],
    template="\
     你是一個場務知識的聊天機器人，你擅長根據Context和Chat History回答問題，\
     以下是Context、Chat History和問題，請你只針對該問題回答。\n\n\
     Context: {retrieved_document} \n\n\
-    Chat History: {chat_history}\n\n\
-    Question: {input} \n\
+    Chat History:\n{chat_history}\n\n\
+    Question:{input} \n\
     Answer:",
 )
 
-def concatenate_docs(docs):
-    return "\n\n".join(doc.page_content.replace("\n", "") for doc in docs)
-
-# rag_chain = (
-#   {
-#       "retrieved_document": itemgetter("question") | retriever | concatenate_docs, 
-#       "question": itemgetter("question"),
-#       "instruction": itemgetter("instruction")
-#   }
-#   | prompt
-#   | llm
-#   | StrOutputParser()
-# )
-
-rag_chain = LLMChain(
+# 3. Define LLM and chain
+llm = HuggingFaceHub(
+  repo_id="mistralai/Mixtral-8x7B-Instruct-v0.1",
+  model_kwargs={"temperature":0.8, "max_length":1000},
+)
+chain = LLMChain(
    llm=llm,
    prompt=prompt,
 )
 
+def concatenate_docs(docs):
+    return "\n\n".join(doc.page_content.replace("\n", "") for doc in docs)
 
 app = FastAPI(
   title="LangChain Server",
@@ -88,7 +75,10 @@ app = FastAPI(
 @app.post("/query/")
 async def agent(request: ChatRequest) -> str:
   """Handle a request."""
+  # Retrieve document from retriever
   retrieved_document = concatenate_docs(vectorstore.similarity_search(request.input, k=2))
+
+  # Convert chat history to string
   chat_history = ""
   for i in range(len(request.chat_history)):
     if i % 2 == 0:
@@ -96,7 +86,8 @@ async def agent(request: ChatRequest) -> str:
     else:
       chat_history += "AI: " + request.chat_history[i] + "\n"
 
-  res = rag_chain.run({
+  # Run the chain
+  res = chain.run({
       "input": request.input,
       "chat_history": chat_history,
       "retrieved_document": retrieved_document
