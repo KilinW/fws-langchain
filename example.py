@@ -4,7 +4,8 @@ import os
 from operator import itemgetter
 
 from fastapi import FastAPI, Body
-from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.messages import AIMessage, HumanMessage
+from langchain_core.prompts import ChatPromptTemplate, PromptTemplate
 from langchain_openai import ChatOpenAI
 from langchain_community.document_loaders import WebBaseLoader
 from langchain_community.document_loaders import PyPDFLoader
@@ -25,6 +26,7 @@ from langchain_core.runnables import RunnablePassthrough
 from langserve import add_routes
 from langchain_core.output_parsers import StrOutputParser
 from langchain.chains import LLMChain
+from langchain.memory import ConversationBufferMemory
 
 from src.utils.io import Input, Output, ChatRequest
 
@@ -46,9 +48,16 @@ llm = HuggingFaceHub(
   model_kwargs={"temperature":0.8, "max_length":1000},
 )
 
-prompt = ChatPromptTemplate.from_messages([
-                ("human", "Question: {input} \nContext: {retrieved_document} \nAnswer:"),
-            ])
+prompt = PromptTemplate(
+   input_variables = ["input", "chat_history", "retrieved_document"],
+   template="\
+    你是一個場務知識的聊天機器人，你擅長根據Context和Chat History回答問題，\
+    以下是Context、Chat History和問題，請你只針對該問題回答。\n\n\
+    Context: {retrieved_document} \n\n\
+    Chat History: {chat_history}\n\n\
+    Question: {input} \n\
+    Answer:",
+)
 
 def concatenate_docs(docs):
     return "\n\n".join(doc.page_content.replace("\n", "") for doc in docs)
@@ -76,12 +85,20 @@ app = FastAPI(
   description="A simple API server using LangChain's Runnable interfaces",
 )
 
-@app.post("/agent/")
+@app.post("/query/")
 async def agent(request: ChatRequest) -> str:
   """Handle a request."""
   retrieved_document = concatenate_docs(vectorstore.similarity_search(request.input, k=2))
+  chat_history = ""
+  for i in range(len(request.chat_history)):
+    if i % 2 == 0:
+      chat_history += "Human: " + request.chat_history[i] + "\n"
+    else:
+      chat_history += "AI: " + request.chat_history[i] + "\n"
+
   res = rag_chain.run({
       "input": request.input,
+      "chat_history": chat_history,
       "retrieved_document": retrieved_document
   })
   print(res)

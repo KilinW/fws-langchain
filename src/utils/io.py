@@ -11,14 +11,12 @@ from typing import List, Optional, Dict
 
 class Input(BaseModel):
   input: str
-  chat_history: List[BaseMessage] = Field(
-    ...,
-    extra={"widget": {"type": "chat", "input": "location"}},
-  )
 
 class Output(BaseModel):
   output: str
 
 class ChatRequest(BaseModel):
   input: str
-  chat_history: str = ""
+  chat_history: List[str]
+  model: str = "mistralai/Mixtral-8x7B-Instruct-v0.1"
+  model_params: Optional[Dict] = None
