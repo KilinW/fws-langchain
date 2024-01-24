@@ -23,6 +23,9 @@ logger = logging.getLogger(__name__)
 def load_sop_pdf():
   return PyPDFLoader('./sample/Machine Model X.pdf')
 
+def load_gcs_sop_pdf():
+  return GCSDirectoryLoader(project_name=os.getenv("GOOGLE_CLOUD_PROJECT_ID"), bucket=os.getenv("GOOGLE_CLOUD_STORAGE_BUCKET"))
+
 def ingest_docs():
   docs_from_sop_pdf = load_sop_pdf()
   print(docs_from_sop_pdf)
