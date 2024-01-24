@@ -1,9 +1,10 @@
 from langserve import RemoteRunnable
+import requests
 
-remote_chain = RemoteRunnable("http://localhost:8000/agent/")
-response = remote_chain.invoke({
-  "input": "how did DARPA internet protocols design?",
+response = requests.post("http://localhost:8000/agent/", json={
+  "input": "請問x-100機台未啟動該如何解決?",
+  "model": "mistralai/Mixtral-8x7B-Instruct-v0.1",
   "chat_history": []
 })
 
-print(response)
+print(response.content.decode("utf-8"))
