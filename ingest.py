@@ -1,0 +1,45 @@
+"""
+1. Load files from GCS into LangChain
+2. Convert to embeddings
+3. Store in FAISS
+"""
+
+import logging
+import os
+from dotenv import load_dotenv
+from langchain_community.document_loaders import PyPDFLoader, GCSDirectoryLoader
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_community.embeddings import HuggingFaceEmbeddings
+from langchain_community.vectorstores import FAISS, Weaviate
+
+load_dotenv()
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+# Should be GCS loader
+# loader = GCSDirectoryLoader(project_name=os.getenv("GOOGLE_CLOUD_PROJECT_ID"), bucket=os.getenv("GOOGLE_CLOUD_STORAGE_BUCKET"))
+
+def load_sop_pdf():
+  return PyPDFLoader('./sample/Machine Model X.pdf')
+
+def ingest_docs():
+  docs_from_sop_pdf = load_sop_pdf()
+  print(docs_from_sop_pdf)
+  logger.info(f"Loaded documents from SOP PDF.")
+
+  text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=300)
+  docs_transformed = docs_from_sop_pdf.load_and_split(text_splitter=text_splitter)
+
+  # If using Weaviate as vector storage client, need to add metadata
+  for doc in docs_transformed:
+    if "source" not in doc.metadata:
+      doc.metadata["source"] = ""
+    if "title" not in doc.metadata:
+      doc.metadata["title"] = ""
+
+  embeddings = HuggingFaceEmbeddings()
+  return Weaviate.from_documents(docs_transformed, embeddings, weaviate_url="http://localhost:8765", by_text=False)
+
+if __name__ == "__main__":
+  ingest_docs()
