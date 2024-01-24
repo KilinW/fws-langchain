@@ -1,0 +1,43 @@
+name: CI/CD Workflow
+
+on:
+  push:
+    branches: 
+      - main
+  pull_request:
+    branches: 
+      - main
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.11'
+
+    - name: Install dependencies
+      run: |
+        pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Run tests
+      run: |
+        # Add commands to run your tests here
+        python -m unittest discover -s tests
+
+    - name: Build Docker image
+      run: docker build -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/lc-app:${{ github.sha }} .
+
+    - name: Log in to Google Container Registry
+      run: echo ${{ secrets.GCR_JSON_KEY }} | docker login -u _json_key --password-stdin https://gcr.io
+
+    - name: Push Docker image to GCR
+      run: docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/lc-app:${{ github.sha }}
+
+    # Additional deployment steps can be added here

@@ -1,5 +1,17 @@
 version: '3.4'
 services:
+  langchain:
+    build:
+      context: .
+      dockerfile: dockerfile
+    ports:
+      - 8000:8000
+    restart: always
+    environment:
+      OPENAI_API_KEY: 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
+      GOOGLE_CLOUD_PROJECT_ID: tsmccareerhack2024-tsid-grp3
+      GOOGLE_CLOUD_STORAGE_BUCKET: tsmccareerhack2024-tsid-grp3-bucket
+      HUGGINGFACEHUB_API_TOKEN: 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
   weaviate:
     command:
       - --host
