@@ -1,5 +1,7 @@
-from langchain.pydantic_v1 import BaseModel, Field
+from pydantic import BaseModel, Field
 from langchain_core.messages import BaseMessage
+from typing import List, Optional, Dict
+
 
 
 # 5. Adding chain route
@@ -14,6 +16,9 @@ class Input(BaseModel):
     extra={"widget": {"type": "chat", "input": "location"}},
   )
 
-
 class Output(BaseModel):
   output: str
+
+class ChatRequest(BaseModel):
+  input: str
+  chat_history: str = ""
