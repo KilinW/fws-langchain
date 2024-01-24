@@ -1,11 +1,15 @@
-from langchain.pydantic_v1 import BaseModel, Field
+from pydantic import BaseModel, Field
 from langchain_core.messages import BaseMessage
-
-
-# 5. Adding chain route
+from typing import List, Optional, Dict
 
 # We need to add these input/output schemas because the current AgentExecutor
 # is lacking in schemas.
+
+class ChatRequest(BaseModel):
+  input: str
+  chat_history: Optional[List[BaseMessage]]
+  model: str
+
 
 class Input(BaseModel):
   input: str
@@ -17,3 +21,4 @@ class Input(BaseModel):
 
 class Output(BaseModel):
   output: str
+

@@ -28,6 +28,8 @@ def authenticate_implicit_with_adc(project_id):
     print("Buckets:")
     for bucket in buckets:
         print(bucket.name)
+        for file in bucket.list_blobs():
+            print(file.name)
     print("Listed all storage buckets.")
 
 authenticate_implicit_with_adc(project_id=os.getenv("GOOGLE_CLOUD_PROJECT_ID"))
