@@ -5,11 +5,15 @@ from typing import List, Optional, Dict
 # We need to add these input/output schemas because the current AgentExecutor
 # is lacking in schemas.
 
+class ModelParams(BaseModel):
+  temperature: float
+  max_length: int
+
 class ChatRequest(BaseModel):
   input: str
   chat_history: Optional[List[BaseMessage]]
   model: str
-
+  model_params: ModelParams
 
 class VectorizedParams(BaseModel):
   chunk_size: int
