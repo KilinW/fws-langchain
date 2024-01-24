@@ -10,15 +10,16 @@ class ChatRequest(BaseModel):
   chat_history: Optional[List[BaseMessage]]
   model: str
 
+
 class VectorizedParams(BaseModel):
   chunk_size: int
   chunk_overlap: int
+
 
 class FileUploadRequest(BaseModel):
   url: str
   file_name: str
   vectorize_params: VectorizedParams
-
 
 
 class Input(BaseModel):

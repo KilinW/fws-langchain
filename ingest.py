@@ -23,8 +23,10 @@ logger = logging.getLogger(__name__)
 def load_sop_pdf():
   return PyPDFLoader('./sample/Machine Model X.pdf')
 
+
 def load_gcs_sop_pdf():
   return GCSDirectoryLoader(project_name=os.getenv("GOOGLE_CLOUD_PROJECT_ID"), bucket=os.getenv("GOOGLE_CLOUD_STORAGE_BUCKET"))
+
 
 def ingest_docs():
   docs_from_sop_pdf = load_sop_pdf()
@@ -43,6 +45,7 @@ def ingest_docs():
 
   embeddings = HuggingFaceEmbeddings()
   return Weaviate.from_documents(docs_transformed, embeddings, weaviate_url="http://localhost:8765", by_text=False)
+
 
 if __name__ == "__main__":
   ingest_docs()
