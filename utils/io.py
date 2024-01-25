@@ -8,9 +8,9 @@ prompt = PromptTemplate(
   input_variables = ["input", "chat_history", "retrieved_document"],
    template="\
     你是一個場務知識的聊天機器人，你擅長根據Context和Chat History回答問題，\
-    以下是Context、Chat History和問題，請你只針對該問題回答。\n\n\
+    以下是Context、Chat History和Question，請你只針對該Question回答。\n\n\
     Context: {retrieved_document} \n\n\
-    Chat History:\n{chat_history}\n\n\
+    Chat History:\n{chat_history}\n\
     Question:{input} \n\
     Answer:",
 )
@@ -49,3 +49,11 @@ def generate_chat_history(chat_history: List[str]):
     else:
       output += "AI: " + chat_history[i] + "\n"
   return output
+
+def generate_reference_output(docs):
+  reference_output = "Reference:\n"
+  for doc in docs:
+    pdf_name = doc.metadata["source"].split("/")[-1]
+    page = doc.metadata["page"]
+    reference_output += f"{pdf_name} | Page {page}\n"
+  return reference_output

@@ -3,7 +3,7 @@ from langchain_core.messages import AIMessage, HumanMessage
 import requests
 
 response = requests.post("http://localhost:8000/agent/", json={
-  "input": "我朋友叫什麼名字?",
+  "input": "x-100故障時會怎麼辦",
   "chat_history": [
     "你好，我叫何宏發",
     "你好",
@@ -15,5 +15,5 @@ response = requests.post("http://localhost:8000/agent/", json={
   "model": "gpt-3.5-turbo",
   "model_params": {"temperature":0, "max_length":1000},
 })
-print(response)
+
 print(response.content.decode("utf-8"))
