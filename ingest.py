@@ -1,7 +1,7 @@
 """
 1. Load files from GCS into LangChain
 2. Convert to embeddings
-3. Store in FAISS
+3. Store in Weaviate
 """
 
 import logging
@@ -16,12 +16,6 @@ load_dotenv()
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-
-# Should be GCS loader
-# loader = GCSDirectoryLoader(project_name=os.getenv("GOOGLE_CLOUD_PROJECT_ID"), bucket=os.getenv("GOOGLE_CLOUD_STORAGE_BUCKET"))
-
-def load_sop_pdf():
-  return PyPDFLoader('./sample/Machine Model X.pdf')
 
 
 def load_gcs_sop_pdf():

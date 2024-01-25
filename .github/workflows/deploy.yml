@@ -31,7 +31,7 @@ jobs:
     - name: Run tests
       run: |
         # Add commands to run your tests here
-        python -m unittest discover -s tests
+        python -m pytest
 
     - name: Build Docker image
       run: docker build -t gcr.io/${{ env.GCP_PROJECT_ID }}/lc-app:${{ github.sha }} .

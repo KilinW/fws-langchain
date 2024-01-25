@@ -61,10 +61,10 @@ async def agent(request: ChatRequest) -> str:
 
 
 @app.post("/feedback/")
-async def feedback(request) -> Output:
+async def feedback(request):
   """Handle feedbacks"""
   print(request)
-  return Output(output="OK")
+  return {"output": "OK"}
 
 
 @app.post("/upload_file/")
