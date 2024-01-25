@@ -30,7 +30,6 @@ jobs:
 
     - name: Run tests
       run: |
-        # Add commands to run your tests here
         python -m pytest
 
     - name: Build Docker image
