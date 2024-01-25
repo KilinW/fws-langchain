@@ -12,3 +12,4 @@ python-dotenv==1.0.1
 Requests==2.31.0
 uvicorn==0.27.0
 weaviate_client==4.4b2
+google-cloud-storage==2.14.0
