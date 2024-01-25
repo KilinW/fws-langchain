@@ -12,7 +12,7 @@ jobs:
   build-and-push:
     runs-on: ubuntu-latest
     env:
-      GCP_PROJECT_ID: tsmccareerhack2024-tsid-grp3
+      GCP_PROJECT_ID: objectdetection-363706
 
     steps:
     - name: Checkout code
@@ -35,8 +35,8 @@ jobs:
     - name: Build Docker image
       run: docker build -t gcr.io/${{ env.GCP_PROJECT_ID }}/lc-app:${{ github.sha }} .
 
-    - name: Log in to Google Container Registry
-      run: echo ${{ secrets.GCR_JSON_KEY }} | docker login -u _json_key --password-stdin https://gcr.io
+    - name: Log in to Google Artifacts Registry
+      run: cat ${{ secrets.GAR_JSON_KEY }} | docker login -u _json_key --password-stdin https://asia-east1-docker.pkg.dev
 
     - name: Push Docker image to GCR
       run: docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/lc-app:${{ github.sha }}
