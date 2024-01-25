@@ -5,14 +5,14 @@ import os
 from fastapi import FastAPI, Body
 from langchain_core.prompts import PromptTemplate
 from langchain_community.document_loaders import PyPDFLoader
-from langchain.embeddings import HuggingFaceEmbeddings
+from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_community.vectorstores import FAISS
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain import HuggingFaceHub
 from langchain.chains.question_answering import load_qa_chain
 from langchain.chains import LLMChain
 
-from src.utils.io import ChatRequest
+from utils.io import ChatRequest
 
 load_dotenv()
 
@@ -41,7 +41,7 @@ def concatenate_retrived_docs(docs):
     return "\n\n".join(doc.page_content.replace("\n", "") for doc in docs)
 
 def generate_chat_history(chat_history: List[str]) -> str:
-    chat_history = ""
+    # chat_history = ""
     for i in range(len(chat_history)):
         if i % 2 == 0:
             chat_history += "Human: " + chat_history[i] + "\n"
@@ -62,7 +62,7 @@ def create_chain(model: str, model_params: dict) -> LLMChain:
       print("//--------Use default model: mistralai/Mixtral-8x7B-Instruct-v0.1--------//")
       llm = HuggingFaceHub(
          repo_id="mistralai/Mixtral-8x7B-Instruct-v0.1",
-         model_kwargs={"temperature":0.8, "max_length":1000},
+         model_kwargs={"temperature":0.1, "max_length":1000},
       )
     
     chain = LLMChain(
@@ -78,7 +78,7 @@ app = FastAPI(
   description="A simple API server using LangChain's Runnable interfaces",
 )
 
-@app.post("/query/")
+@app.post("/agent/")
 async def agent(request: ChatRequest) -> str:
   """Handle a request."""
   # Define LLM and chain
@@ -89,6 +89,7 @@ async def agent(request: ChatRequest) -> str:
 
   # Convert chat history to string
   chat_history = generate_chat_history(request.chat_history)
+  print(chat_history)
 
   # Run the chain
   res = chain.run({

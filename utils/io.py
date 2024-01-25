@@ -1,9 +1,7 @@
+from langchain.memory import ChatMessageHistory
 from pydantic import BaseModel, Field
-from langchain_core.messages import BaseMessage
-from typing import List, Optional, Dict
+from typing import List
 
-# We need to add these input/output schemas because the current AgentExecutor
-# is lacking in schemas.
 
 class ModelParams(BaseModel):
   temperature: float
@@ -11,7 +9,7 @@ class ModelParams(BaseModel):
 
 class ChatRequest(BaseModel):
   input: str
-  chat_history: Optional[List[BaseMessage]]
+  chat_history: List[str]
   model: str
   model_params: ModelParams
 
@@ -26,13 +24,14 @@ class FileUploadRequest(BaseModel):
   vectorize_params: VectorizedParams
 
 
-class Input(BaseModel):
-  input: str
-  chat_history: List[BaseMessage] = Field(
-    ...,
-    extra={"widget": {"type": "chat", "input": "location"}},
-  )
-
-
 class Output(BaseModel):
   output: str
+
+
+def generate_chat_history(chat_history: List[str]):
+  for i in range(len(chat_history)):
+    if i % 2 == 0:
+      chat_history += "Human: " + chat_history[i] + "\n"
+    else:
+      chat_history += "AI: " + chat_history[i] + "\n"
+  return chat_history
