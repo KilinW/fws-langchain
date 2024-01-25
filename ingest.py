@@ -29,7 +29,7 @@ def load_gcs_sop_pdf():
 
 
 def ingest_docs():
-  docs_from_sop_pdf = load_sop_pdf()
+  docs_from_sop_pdf = load_gcs_sop_pdf()
   print(docs_from_sop_pdf)
   logger.info(f"Loaded documents from SOP PDF.")
 
@@ -40,6 +40,8 @@ def ingest_docs():
   for doc in docs_transformed:
     if "source" not in doc.metadata:
       doc.metadata["source"] = ""
+    if "page" not in doc.metadata:
+      doc.metadata["page"] = ""
     if "title" not in doc.metadata:
       doc.metadata["title"] = ""
 
