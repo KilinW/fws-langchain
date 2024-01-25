@@ -7,7 +7,7 @@ import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from typing import List
-from utils.io import Input, Output, ChatRequest, FileUploadRequest
+from utils.io import Output, ChatRequest, FileUploadRequest, generate_chat_history, generate_reference_output 
 from ingest import ingest_docs
 from chain import get_chain
 from upload import upload_to_gcs
@@ -40,14 +40,28 @@ def initialize_db():
 
 @app.post("/agent/")
 async def agent(request: ChatRequest) -> str:
+  """Handle a request."""
+  chat_history = generate_chat_history(request.chat_history)
+
   docs = db.similarity_search(request.input, k=2)
+
+  reference_output = generate_reference_output(docs)
+
   chain = get_chain(request.model, chain_type="stuff")
-  resp = chain.run(input_documents=docs, question=request.input)
-  return resp
+
+  model_output = chain.run({
+    "input": request.input,
+    "chat_history": chat_history,
+    "retrieved_document": docs
+  })
+
+  res = model_output + "\n\n" + reference_output
+
+  return res
 
 
 @app.post("/feedback/")
-async def feedback(request: Input) -> Output:
+async def feedback(request) -> Output:
   """Handle feedbacks"""
   print(request)
   return Output(output="OK")
