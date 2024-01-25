@@ -11,6 +11,8 @@ on:
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
+    env:
+      GCP_PROJECT_ID: tsmccareerhack2024-tsid-grp3
 
     steps:
     - name: Checkout code
@@ -32,7 +34,7 @@ jobs:
         python -m unittest discover -s tests
 
     - name: Build Docker image
-      run: docker build -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/lc-app:${{ github.sha }} .
+      run: docker build -t gcr.io/${{ env.GCP_PROJECT_ID }}/lc-app:${{ github.sha }} .
 
     - name: Log in to Google Container Registry
       run: echo ${{ secrets.GCR_JSON_KEY }} | docker login -u _json_key --password-stdin https://gcr.io
@@ -40,4 +42,3 @@ jobs:
     - name: Push Docker image to GCR
       run: docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/lc-app:${{ github.sha }}
 
-    # Additional deployment steps can be added here
