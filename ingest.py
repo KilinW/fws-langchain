@@ -29,11 +29,11 @@ def load_gcs_sop_pdf():
 
 
 def ingest_docs():
-  docs_from_sop_pdf = load_sop_pdf()
-  print(docs_from_sop_pdf)
+  docs_from_sop_pdf = load_gcs_sop_pdf()
+  print(docs_from_sop_pdf.bucket)
   logger.info(f"Loaded documents from SOP PDF.")
 
-  text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=300)
+  text_splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=300, separators=[" ", ",", "\n"])
   docs_transformed = docs_from_sop_pdf.load_and_split(text_splitter=text_splitter)
 
   # If using Weaviate as vector storage client, need to add metadata

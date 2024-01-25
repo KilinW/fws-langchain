@@ -31,7 +31,11 @@ app.add_middleware(
 )
 
 
-db = ingest_docs()
+db = None
+
+def initialize_db():
+  global db
+  db = ingest_docs()
 
 
 @app.post("/agent/")
@@ -53,11 +57,16 @@ async def feedback(request: Input) -> Output:
 async def upload_file(request: FileUploadRequest):
   """Handle files upload to GCS"""
   upload_to_gcs(project_id=os.getenv("GOOGLE_CLOUD_PROJECT_ID"), url=request.url, file_name=request.file_name)
-  ingest_docs()
+  
+  global db
+  db = ingest_docs()
+  
   return {"message": "file uploaded successfully"}
 
 
 if __name__ == "__main__":
   import uvicorn
+
+  initialize_db()
 
   uvicorn.run(app, host="localhost", port=8000)
