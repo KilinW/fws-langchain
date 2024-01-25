@@ -23,12 +23,17 @@ logger = logging.getLogger(__name__)
 def load_sop_pdf():
   return PyPDFLoader('./sample/Machine Model X.pdf')
 
+
+def load_gcs_sop_pdf():
+  return GCSDirectoryLoader(project_name=os.getenv("GOOGLE_CLOUD_PROJECT_ID"), bucket=os.getenv("GOOGLE_CLOUD_STORAGE_BUCKET"))
+
+
 def ingest_docs():
-  docs_from_sop_pdf = load_sop_pdf()
-  print(docs_from_sop_pdf)
+  docs_from_sop_pdf = load_gcs_sop_pdf()
+  print(docs_from_sop_pdf.bucket)
   logger.info(f"Loaded documents from SOP PDF.")
 
-  text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=300)
+  text_splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=300, separators=[" ", ",", "\n"])
   docs_transformed = docs_from_sop_pdf.load_and_split(text_splitter=text_splitter)
 
   # If using Weaviate as vector storage client, need to add metadata
@@ -40,6 +45,7 @@ def ingest_docs():
 
   embeddings = HuggingFaceEmbeddings()
   return Weaviate.from_documents(docs_transformed, embeddings, weaviate_url="http://localhost:8765", by_text=False)
+
 
 if __name__ == "__main__":
   ingest_docs()

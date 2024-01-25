@@ -11,6 +11,17 @@ class ChatRequest(BaseModel):
   model: str
 
 
+class VectorizedParams(BaseModel):
+  chunk_size: int
+  chunk_overlap: int
+
+
+class FileUploadRequest(BaseModel):
+  url: str
+  file_name: str
+  vectorize_params: VectorizedParams
+
+
 class Input(BaseModel):
   input: str
   chat_history: List[BaseMessage] = Field(
@@ -21,4 +32,3 @@ class Input(BaseModel):
 
 class Output(BaseModel):
   output: str
-
