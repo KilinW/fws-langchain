@@ -42,9 +42,10 @@ class Output(BaseModel):
 
 
 def generate_chat_history(chat_history: List[str]):
+  output = ""
   for i in range(len(chat_history)):
     if i % 2 == 0:
-      chat_history += "Human: " + chat_history[i] + "\n"
+      output += "Human: " + chat_history[i] + "\n"
     else:
-      chat_history += "AI: " + chat_history[i] + "\n"
-  return chat_history
+      output += "AI: " + chat_history[i] + "\n"
+  return output
