@@ -10,10 +10,10 @@ import requests
 # })
 
 response = requests.post("http://localhost:8000/query/", json={
-  "input": "你剛剛說你叫什麼名字？",
-  "chat_history": ["你好，你叫什麼名字？", "陳冠錞。"],
-  "model": "mistralai/Mixtral-8x7B-Instruct-v0.1",
+  "input": "我叫什麼名字？",
+  "chat_history": ["你好，我叫何宏發", "你好"],
+  "model": "just testing",
   "model_params": {"temperature":0.8, "max_length":1000},
 })
-
+print(response)
 print(response.content.decode("utf-8"))
