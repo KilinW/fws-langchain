@@ -4,10 +4,10 @@ Description: Entrypoint for the application.
 
 from dotenv import load_dotenv
 import os
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from typing import List
-from utils.io import Output, ChatRequest, FileUploadRequest, generate_chat_history, generate_reference_output 
+from utils.io import Output, ChatRequest, FileUploadRequest, generate_chat_history, generate_reference_output, generate_formatted_docs
 from ingest import ingest_docs
 from chain import get_chain
 from upload import upload_to_gcs
@@ -41,23 +41,29 @@ def initialize_db():
 @app.post("/agent/")
 async def agent(request: ChatRequest) -> str:
   """Handle a request."""
+  chain = get_chain(request.model, request.model_params)
+  
   chat_history = generate_chat_history(request.chat_history)
 
   docs = db.similarity_search(request.input, k=2)
 
+  formatted_docs = generate_formatted_docs(docs)
+
   reference_output = generate_reference_output(docs)
 
-  chain = get_chain(request.model, chain_type="stuff")
+  
 
   model_output = chain.run({
+    "instruction": request.instruction,
     "input": request.input,
     "chat_history": chat_history,
-    "retrieved_document": docs
+    "retrieved_document": formatted_docs
   })
 
   res = model_output + "\n\n" + reference_output
 
   return res
+  
 
 
 @app.post("/feedback/")
