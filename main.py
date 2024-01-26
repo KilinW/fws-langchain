@@ -7,7 +7,7 @@ import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from typing import List
-from utils.io import Output, ChatRequest, FileUploadRequest, generate_chat_history, generate_reference_output 
+from utils.io import Output, ChatRequest, FileUploadRequest, generate_chat_history, generate_reference_output, generate_formatted_docs
 from ingest import ingest_docs
 from chain import get_chain
 from upload import upload_to_gcs
@@ -41,6 +41,8 @@ async def agent(request: ChatRequest) -> str:
 
   docs = db.similarity_search(request.input, k=2)
 
+  formatted_docs = generate_formatted_docs(docs)
+
   reference_output = generate_reference_output(docs)
 
   chain = get_chain(request.model, chain_type="stuff")
@@ -48,7 +50,7 @@ async def agent(request: ChatRequest) -> str:
   model_output = chain.run({
     "input": request.input,
     "chat_history": chat_history,
-    "retrieved_document": docs
+    "retrieved_document": formatted_docs
   })
 
   res = model_output + "\n\n" + reference_output

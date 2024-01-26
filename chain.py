@@ -1,4 +1,5 @@
-from langchain import hub, HuggingFaceHub
+from langchain import hub
+from langchain_community.llms import HuggingFaceHub
 from langchain_openai import ChatOpenAI
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain.chains import LLMChain

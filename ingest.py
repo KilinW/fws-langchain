@@ -25,7 +25,7 @@ def load_sop_pdf():
 
 
 def load_gcs_sop_pdf():
-  return GCSDirectoryLoader(project_name=os.getenv("GOOGLE_CLOUD_PROJECT_ID"), bucket=os.getenv("GOOGLE_CLOUD_STORAGE_BUCKET"))
+  return GCSDirectoryLoader(project_name=os.getenv("GOOGLE_CLOUD_PROJECT_ID"), bucket=os.getenv("GOOGLE_CLOUD_STORAGE_BUCKET"), loader_func=PyPDFLoader)
 
 
 def ingest_docs():
