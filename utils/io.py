@@ -29,6 +29,7 @@ class ChatRequest(BaseModel):
   chat_history: List[str]
   model: str
   params : Params
+  regen_count: int
 
 class FileUploadRequest(BaseModel):
   url: str
@@ -67,3 +68,4 @@ def generate_formatted_docs(docs):
     context = doc.page_content.replace("\n", "")
     formatted_docs += f"{context}\n\n"
   return formatted_docs
+

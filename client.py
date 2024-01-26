@@ -13,7 +13,8 @@ response = requests.post("http://localhost:8000/agent/", json={
         "model_params": {
             "temperature": 0
         }
-    }
+    },
+    "regen_count": 0
 })
 
 print("Answer:", response.json()["answer"])

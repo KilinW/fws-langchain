@@ -39,7 +39,7 @@ async def agent(request: ChatRequest) -> dict:
   
   chat_history = generate_chat_history(request.chat_history)
 
-  docs = db.similarity_search(request.input, k=2)
+  docs = db.similarity_search(request.input, k=request.regen_count + 1)
 
   formatted_docs = generate_formatted_docs(docs)
 
