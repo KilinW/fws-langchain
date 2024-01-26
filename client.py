@@ -14,9 +14,9 @@ response = requests.post("http://localhost:8000/agent/", json={
             "temperature": 0
         }
     },
-    "regen_count": 0
+    "regen_count": 2,
+    "file_name": ["x-100.pdf"]
 })
 
 print("Answer:", response.json()["answer"])
 print("Reference:", response.json()["reference1"])
-print("Page:", response.json()["page"])

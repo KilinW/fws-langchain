@@ -30,6 +30,7 @@ class ChatRequest(BaseModel):
   model: str
   params : Params
   regen_count: int
+  file_name: List[str]
 
 class FileUploadRequest(BaseModel):
   url: str

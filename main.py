@@ -34,7 +34,7 @@ app.add_middleware(
 @app.post("/agent/")
 async def agent(request: ChatRequest) -> dict:
   """Handle a request."""
-  db = ingest_docs(request.params.langchain_params)
+  db = ingest_docs(request.params.langchain_params, file_names = request.file_name)
   chain = get_chain(request.model, request.params.model_params.dict())
   
   chat_history = generate_chat_history(request.chat_history)
@@ -43,7 +43,7 @@ async def agent(request: ChatRequest) -> dict:
 
   formatted_docs = generate_formatted_docs(docs)
 
-  reference_output = generate_reference_output(docs)
+  #reference_output = generate_reference_output(docs)
 
 
   model_output = chain.run({
@@ -59,7 +59,7 @@ async def agent(request: ChatRequest) -> dict:
         "input": request.input,
         "answer": model_output,
         "reference1": formatted_docs,
-        "page": reference_output,
+        #"page": reference_output,
         "langchain_params": request.params.langchain_params,
   }
 
