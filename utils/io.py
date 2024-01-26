@@ -7,8 +7,8 @@ from typing import List
 prompt = PromptTemplate(
   input_variables = ["input", "chat_history", "retrieved_document"],
    template="\
-    你是一個廠務知識的聊天機器人，你擅長根據Context和Chat History回答Question，\
-    以下是Context、Chat History和Question，請你只針對該Question回答。\n\n\
+    你是一個廠務知識的聊天機器人，你擅長根據Context和Chat History回答問題，\
+    以下是Context、Chat History和問題，請你只針對該Question回答。\n\n\
     Context: {retrieved_document} \n\n\
     Chat History:\n{chat_history}\n\
     Question:{input} \n\
@@ -20,15 +20,12 @@ class ModelParams(BaseModel):
   temperature: float
   max_length: int
 
-class ChatHistoryItem(BaseModel):
-    input: str
-    response: str
 
 class ChatRequest(BaseModel):
-    input: str
-    model: str
-    model_params: ModelParams
-    chat_history: List[ChatHistoryItem]
+  input: str
+  chat_history: List[str]
+  model: str
+  model_params: ModelParams
 
 class VectorizedParams(BaseModel):
   chunk_size: int

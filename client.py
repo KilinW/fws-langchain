@@ -1,28 +1,19 @@
 import requests
 
-chat_history = []
-def send_request(input_text):
-    global chat_history 
-    request_data = {
-        "input": input_text,
-        "model": "gpt-3.5-turbo",
-        "model_params": {"temperature":0, "max_length":1000},
-        "chat_history": chat_history
-    }
+response = requests.post("http://localhost:8000/agent/", json={
+   "input": "我朋友叫啥",
+   "chat_history": [
+    "你好，我叫何宏發",
+     "你好",
+     "我叫什麼名字?",
+     "你叫何宏發",
+     "很好，現在起請稱呼我為宏發。我有一個朋友叫 Cody。我想問x-100機台加工精度不佳該如何解決?",
+     "檢查刀具是否磨損，如有磨損應及時更換。確認冷卻液流量是否正常，過低的流量可能導致切削效果不佳。檢查伺服馬達是否正常運作，如有異常應及時聯繫維修人員。"
+   ],
+   "model": "gpt-3.5-turbo",
+   "model_params": {"temperature":0, "max_length":1000}
+ })
 
-    response = requests.post("http://localhost:8000/agent/", json=request_data)
-    response_data = response.json()
-    chat_history.append({
-        "input": input_text,
-        "response": response_data.get("answer"),
-    })
-
-    print("Answer:", response_data.get("answer"))
-    print("Reference:", response_data.get("reference1"))
-    print("Reference Page:", response_data.get("page"))
-    #print("Reference 2:", response_data.get("reference2"))
-    #print("Page 2:", response_data.get("page2"))
-    print("Chat History:", chat_history)
-
-send_request("x-100機台未啟動怎麼辦")
-send_request("有哪些基本的機台保護措施？")
+print("Answer:", response.json()["answer"])
+print("Reference:", response.json()["reference1"])
+print("Page:", response.json()["page"])
