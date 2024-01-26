@@ -41,6 +41,6 @@ jobs:
         GAR_JSON_KEY: ${{ secrets.GAR_JSON_KEY }}
       run: echo "$GAR_JSON_KEY" | docker login -u _json_key --password-stdin https://asia-east1-docker.pkg.dev
 
-    - name: Push Docker image to GCR
-      run: docker push gcr.io/${{ env.GCP_PROJECT_ID }}/${{ env.GAR_REPOSITORY }}/
+    - name: Push Docker image to GAR
+      run: docker push gcr.io/${{ env.GCP_PROJECT_ID }}/${{ env.GAR_REPOSITORY }}/lc-app:${{ github.sha }}
 
