@@ -1,8 +1,7 @@
 from langchain.memory import ChatMessageHistory
 from langchain_core.prompts import PromptTemplate
 from pydantic import BaseModel, Field
-from typing import List, Dict
-
+from typing import List, Dict, TypedDict
 
 prompt = PromptTemplate(
   input_variables = ["instruction", "input", "chat_history", "retrieved_document"],
@@ -11,27 +10,34 @@ prompt = PromptTemplate(
     Context: {retrieved_document} \n\n\
     Chat History:\n{chat_history}\n\
     Question:{input} \n\
-    Answer:",
+    Answer:"
 )
+class ModelParams(BaseModel):
+  temperature: float
 
+class VectorizedParams(BaseModel):
+  chunk_size: int
+  chunk_overlap: int
+  
+class Params(BaseModel):
+  langchain_params: VectorizedParams
+  model_params: ModelParams
 
 class ChatRequest(BaseModel):
   instruction: str
   input: str
   chat_history: List[str]
   model: str
-  model_params: Dict
-  langchain_params: Dict
-
-class VectorizedParams(BaseModel):
-  chunk_size: int
-  chunk_overlap: int
-
+  params : Params
 
 class FileUploadRequest(BaseModel):
   url: str
   file_name: str
   vectorize_params: VectorizedParams
+
+class Params(BaseModel):
+  langchain_params: VectorizedParams
+  model_params: ModelParams
 
 
 class Output(BaseModel):
@@ -61,4 +67,3 @@ def generate_formatted_docs(docs):
     context = doc.page_content.replace("\n", "")
     formatted_docs += f"{context}\n\n"
   return formatted_docs
-
