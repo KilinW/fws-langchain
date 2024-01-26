@@ -37,7 +37,9 @@ jobs:
       run: docker build -t gcr.io/${{ env.GCP_PROJECT_ID }}/${{ env.GAR_REPOSITORY }}/lc-app:${{ github.sha }} .
 
     - name: Log in to Google Artifacts Registry
-      run: echo ${{ secrets.GAR_JSON_KEY }} | docker login -u _json_key --password-stdin https://asia-east1-docker.pkg.dev
+      env:
+        GAR_JSON_KEY: ${{ secrets.GAR_JSON_KEY }}
+      run: echo "$GAR_JSON_KEY" | docker login -u _json_key --password-stdin https://asia-east1-docker.pkg.dev
 
     - name: Push Docker image to GCR
       run: docker push gcr.io/${{ env.GCP_PROJECT_ID }}/lc-app:${{ github.sha }}
