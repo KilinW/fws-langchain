@@ -4,10 +4,10 @@ Description: Entrypoint for the application.
 
 from dotenv import load_dotenv
 import os
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from typing import List
-from utils.io import Output, ChatRequest, FileUploadRequest, generate_chat_history, generate_reference_output 
+from utils.io import Output, ChatRequest, FileUploadRequest, generate_chat_history, generate_reference_output, generate_formatted_docs, clean_text
 from ingest import ingest_docs
 from chain import get_chain
 from upload import upload_to_gcs
@@ -31,33 +31,39 @@ app.add_middleware(
 )
 
 
-db = None
-
-def initialize_db():
-  global db
-  db = ingest_docs()
-
-
 @app.post("/agent/")
-async def agent(request: ChatRequest) -> str:
+async def agent(request: ChatRequest) -> dict:
   """Handle a request."""
+  db = ingest_docs(request.params.langchain_params, file_names = request.file_name, model = request.model)
+  chain = get_chain(request.model, request.params.model_params.dict())
+  
   chat_history = generate_chat_history(request.chat_history)
 
-  docs = db.similarity_search(request.input, k=2)
+  docs = db.similarity_search(request.input, k=request.regen_count + 1)
 
-  reference_output = generate_reference_output(docs)
+  formatted_docs = clean_text(generate_formatted_docs(docs))
 
-  chain = get_chain(request.model, chain_type="stuff")
+  #reference_output = generate_reference_output(docs)
 
   model_output = chain.run({
+    "instruction": request.instruction,
     "input": request.input,
     "chat_history": chat_history,
-    "retrieved_document": docs
+    "retrieved_document": formatted_docs,
   })
 
-  res = model_output + "\n\n" + reference_output
+  response_data = {
+        "model": request.model,
+        "model_params": request.params.model_params,
+        "input": request.input,
+        "answer": model_output,
+        "reference1": formatted_docs,
+        #"page": reference_output,
+        "langchain_params": request.params.langchain_params,
+  }
 
-  return res
+  return response_data
+  
 
 
 @app.post("/feedback/")
@@ -80,7 +86,5 @@ async def upload_file(request: FileUploadRequest):
 
 if __name__ == "__main__":
   import uvicorn
-
-  initialize_db()
 
   uvicorn.run(app, host="localhost", port=8000)
