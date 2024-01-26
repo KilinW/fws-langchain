@@ -21,7 +21,7 @@ logger = logging.getLogger(__name__)
 # loader = GCSDirectoryLoader(project_name=os.getenv("GOOGLE_CLOUD_PROJECT_ID"), bucket=os.getenv("GOOGLE_CLOUD_STORAGE_BUCKET"))
 
 def load_sop_pdf():
-  return PyPDFLoader('./sample/Machine Model X.pdf')
+  return PyPDFLoader('./sample/機台型號_ x-100.pdf')
 
 
 def load_gcs_sop_pdf():

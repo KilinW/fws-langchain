@@ -4,7 +4,7 @@ Description: Entrypoint for the application.
 
 from dotenv import load_dotenv
 import os
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from typing import List
 from utils.io import Output, ChatRequest, FileUploadRequest, generate_chat_history, generate_reference_output, generate_formatted_docs
@@ -37,6 +37,12 @@ db = ingest_docs()
 @app.post("/agent/")
 async def agent(request: ChatRequest) -> str:
   """Handle a request."""
+  try:
+    chain = get_chain(request.model, chain_type="stuff")
+
+  except Exception as e:
+    raise HTTPException(status_code=500, detail=f"ERROR!!! {str(e)}")
+  
   chat_history = generate_chat_history(request.chat_history)
 
   docs = db.similarity_search(request.input, k=2)
@@ -45,7 +51,7 @@ async def agent(request: ChatRequest) -> str:
 
   reference_output = generate_reference_output(docs)
 
-  chain = get_chain(request.model, chain_type="stuff")
+  
 
   model_output = chain.run({
     "input": request.input,
@@ -56,6 +62,7 @@ async def agent(request: ChatRequest) -> str:
   res = model_output + "\n\n" + reference_output
 
   return res
+  
 
 
 @app.post("/feedback/")

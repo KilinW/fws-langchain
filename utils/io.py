@@ -7,7 +7,7 @@ from typing import List
 prompt = PromptTemplate(
   input_variables = ["input", "chat_history", "retrieved_document"],
    template="\
-    你是一個場務知識的聊天機器人，你擅長根據Context和Chat History回答Question，\
+    你是一個廠務知識的聊天機器人，你擅長並只能根據Context和Chat History回答Question，\
     以下是Context、Chat History和Question，請你只針對該Question回答。\n\n\
     Context: {retrieved_document} \n\n\
     Chat History:\n{chat_history}\n\
@@ -51,16 +51,16 @@ def generate_chat_history(chat_history: List[str]):
   return output
 
 def generate_reference_output(docs):
-  reference_output = "Reference:\n"
+  reference_output = "\n"
   for doc in docs:
     pdf_name = doc.metadata["source"].split("/")[-1]
     page = doc.metadata["page"]
-    reference_output += f"{pdf_name} | Page {page}\n"
+    reference_output += f"{pdf_name} | Page {page+1}\n"
   return reference_output
 
 def generate_formatted_docs(docs):
   formatted_docs = ""
   for doc in docs:
-    context = doc.page_content.replace("\n", " ")
+    context = doc.page_content.replace("\n", "")
     formatted_docs += f"{context}\n\n"
   return formatted_docs

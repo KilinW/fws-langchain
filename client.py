@@ -19,7 +19,7 @@ import requests
 response = requests.post("http://localhost:8000/agent/", json={
   "input": "x-100機台未啟動怎麼辦？",
   "chat_history": [],
-  "model": "mistralai/Mixtral-8x7B-Instruct-v0.1",
+  "model": "gemini-pro",
   "model_params": {"temperature":0, "max_length":1000},
 })
 
