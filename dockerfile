@@ -1,4 +1,6 @@
-FROM python:3.11-alpine3.18
+FROM python:3.11.7-bookworm
+
+RUN apt-get update && apt-get install -y python-dev-is-python3 build-essential
 
 WORKDIR /app
 
