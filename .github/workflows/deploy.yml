@@ -61,8 +61,12 @@ jobs:
         gcloud auth configure-docker
 
     - name: Build Docker image
-      run: docker build -t gcr.io/${{ env.GCP_PROJECT_ID }}/${{ env.GAR_REPOSITORY }}/lc-app:${{ github.sha }} .
+      run: |
+        docker build -t gcr.io/${{ env.GCP_PROJECT_ID }}/${{ env.GAR_REPOSITORY }}/lc-app:latest . |
+        docker build -t gcr.io/${{ env.GCP_PROJECT_ID }}/${{ env.GAR_REPOSITORY }}/lc-app:${{ github.sha }} .
 
     - name: Push Docker image to GAR
-      run: docker push gcr.io/${{ env.GCP_PROJECT_ID }}/${{ env.GAR_REPOSITORY }}/lc-app:${{ github.sha }}
+      run: |
+        docker push gcr.io/${{ env.GCP_PROJECT_ID }}/${{ env.GAR_REPOSITORY }}/lc-app:latest |
+        docker push gcr.io/${{ env.GCP_PROJECT_ID }}/${{ env.GAR_REPOSITORY }}/lc-app:${{ github.sha }}
 
