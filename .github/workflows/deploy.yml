@@ -53,7 +53,7 @@ jobs:
         GAR_JSON_KEY: ${{ secrets.GAR_JSON_KEY }}
       run: |
         echo "$GAR_JSON_KEY" > gcp-key.json
-        gcloud auth activate-service-account ${{ env.SERVICE_ACCOUNT_NAME }} --key-file="$GAR_JSON_KEY"
+        gcloud auth activate-service-account ${{ env.SERVICE_ACCOUNT_NAME }} --key-file=gcp-key.json
         rm gcp-key.json
 
     - name: Google Auth Configure-Docker
