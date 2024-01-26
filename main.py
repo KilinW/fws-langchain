@@ -4,7 +4,7 @@ Description: Entrypoint for the application.
 
 from dotenv import load_dotenv
 import os
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from typing import List
 from utils.io import Output, ChatRequest, FileUploadRequest, generate_chat_history, generate_reference_output, generate_formatted_docs
@@ -31,32 +31,26 @@ app.add_middleware(
 )
 
 
-db = ingest_docs()
-
-
 @app.post("/agent/")
 async def agent(request: ChatRequest) -> dict:
-
-  try:
-    chain = get_chain(request.model, chain_type="stuff")
-
-  except Exception as e:
-    raise HTTPException(status_code=500, detail=f"ERROR!!! {str(e)}")
-
+  """Handle a request."""
+  db = ingest_docs(request.langchain_params)
+  chain = get_chain(request.model, request.model_params)
+  
   chat_history = generate_chat_history(request.chat_history)
 
   docs = db.similarity_search(request.input, k=2)
 
-  formatted_docs1 = generate_formatted_docs(docs)
+  formatted_docs = generate_formatted_docs(docs)
 
   reference_output = generate_reference_output(docs)
 
-  chain = get_chain(request.model, chain_type="stuff")
 
   model_output = chain.run({
+    "instruction": request.instruction,
     "input": request.input,
     "chat_history": chat_history,
-    "retrieved_document": formatted_docs1
+    "retrieved_document": formatted_docs,
   })
 
   response_data = {
@@ -64,11 +58,13 @@ async def agent(request: ChatRequest) -> dict:
         "model_params": request.model_params,
         "input": request.input,
         "answer": model_output,
-        "reference1": formatted_docs1,
-        "page": reference_output
+        "reference1": formatted_docs,
+        "page": reference_output,
+        "langchain_params": request.langchain_params
   }
 
   return response_data
+  
 
 
 @app.post("/feedback/")

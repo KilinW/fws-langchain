@@ -1,14 +1,13 @@
 from langchain.memory import ChatMessageHistory
 from langchain_core.prompts import PromptTemplate
 from pydantic import BaseModel, Field
-from typing import List
+from typing import List, Dict
 
 
 prompt = PromptTemplate(
-  input_variables = ["input", "chat_history", "retrieved_document"],
+  input_variables = ["instruction", "input", "chat_history", "retrieved_document"],
    template="\
-    你是一個廠務知識的聊天機器人，你擅長根據Context和Chat History回答問題，\
-    以下是Context、Chat History和問題，請你只針對該Question回答。\n\n\
+    {instruction}\n\n\
     Context: {retrieved_document} \n\n\
     Chat History:\n{chat_history}\n\
     Question:{input} \n\
@@ -16,16 +15,13 @@ prompt = PromptTemplate(
 )
 
 
-class ModelParams(BaseModel):
-  temperature: float
-  max_length: int
-
-
 class ChatRequest(BaseModel):
+  instruction: str
   input: str
   chat_history: List[str]
   model: str
-  model_params: ModelParams
+  model_params: Dict
+  langchain_params: Dict
 
 class VectorizedParams(BaseModel):
   chunk_size: int
@@ -56,7 +52,7 @@ def generate_reference_output(docs):
   for doc in docs:
     pdf_name = doc.metadata["source"].split("/")[-1]
     page = doc.metadata["page"]
-    reference_output += f"{pdf_name} | Page {page}\n"
+    reference_output += f"{pdf_name} | Page {page+1}\n"
   return reference_output
 
 def generate_formatted_docs(docs):
@@ -65,3 +61,4 @@ def generate_formatted_docs(docs):
     context = doc.page_content.replace("\n", "")
     formatted_docs += f"{context}\n\n"
   return formatted_docs
+
