@@ -5,10 +5,9 @@ from typing import List, Dict
 
 
 prompt = PromptTemplate(
-  input_variables = ["input", "chat_history", "retrieved_document"],
+  input_variables = ["instruction", "input", "chat_history", "retrieved_document"],
    template="\
-    你是一個廠務知識的聊天機器人，你擅長並只能根據Context和Chat History回答Question，\
-    以下是Context、Chat History和Question，請你只針對該Question回答。\n\n\
+    {instruction}\n\n\
     Context: {retrieved_document} \n\n\
     Chat History:\n{chat_history}\n\
     Question:{input} \n\
@@ -17,6 +16,7 @@ prompt = PromptTemplate(
 
 
 class ChatRequest(BaseModel):
+  instruction: str
   input: str
   chat_history: List[str]
   model: str

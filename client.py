@@ -17,10 +17,11 @@ import requests
 # })
 
 response = requests.post("http://localhost:8000/agent/", json={
+  "instruction": "你是一個廠務知識的聊天機器人，你擅長並只能根據Context和Chat History回答Question，以下是Context、Chat History和Question，請你只針對該Question回答。",
   "input": "x-100機台未啟動怎麼辦？",
   "chat_history": [],
   "model": "gpt-3.5-turbo",
-  "model_params": {"temperature":0.1, "max_tokens":5},
+  "model_params": {"temperature":0.1},
 })
 
 print(response.content.decode("utf-8"))

@@ -50,6 +50,7 @@ async def agent(request: ChatRequest) -> str:
   
 
   model_output = chain.run({
+    "instruction": request.instruction,
     "input": request.input,
     "chat_history": chat_history,
     "retrieved_document": formatted_docs
