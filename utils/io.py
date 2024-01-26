@@ -1,6 +1,7 @@
 from langchain.memory import ChatMessageHistory
 from langchain_core.prompts import PromptTemplate
 from pydantic import BaseModel, Field
+import re
 from typing import List, Dict, TypedDict
 
 prompt = PromptTemplate(
@@ -70,3 +71,22 @@ def generate_formatted_docs(docs):
     formatted_docs += f"{context}\n\n"
   return formatted_docs
 
+def clean_text(text):
+    text_with_breaks = text.replace('###', '\n###')
+    text_with_breaks = text_with_breaks.replace('：1', '：\n1').replace('件1', '件\n1').replace('。', '。\n')
+    parts = re.split(' - |。', text_with_breaks)
+
+    sentences = []
+    for part in parts:
+        if part.strip().startswith('###'):
+            sub_parts = part.split('\n', 1)
+            first_line = sub_parts[0].strip()
+            sentences.append(first_line) 
+            if len(sub_parts) > 1:
+                remaining_text = sub_parts[1]
+                sentences.extend(remaining_text.split('\n')) 
+        else:
+            sentences.append(part.strip())
+
+    cleaned_text = '\n'.join(sentences)
+    return cleaned_text

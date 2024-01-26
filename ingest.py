@@ -6,6 +6,8 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_community.vectorstores import FAISS, Weaviate
 from google.cloud import storage
+from langchain.embeddings.openai import OpenAIEmbeddings
+from langchain_google_genai import GoogleGenerativeAIEmbeddings
 
 load_dotenv()
 
@@ -27,7 +29,7 @@ def list_files(bucket_name=os.getenv("GOOGLE_CLOUD_STORAGE_BUCKET"), project_nam
     pdf_files = [blob.name for blob in blobs if blob.name.endswith(".pdf")]
     return pdf_files
 
-def ingest_docs(langchain_params: dict, file_names=None):
+def ingest_docs(langchain_params: dict, model: str, file_names=None):
     if not file_names:
         file_names = list_files()
         logger.info(f"Defaulting to all PDF files in GCS bucket: {file_names}")
@@ -53,9 +55,14 @@ def ingest_docs(langchain_params: dict, file_names=None):
             )
         docs_transformed += text_splitter.split_documents(docs_from_sop_pdf)
 
-    embeddings = HuggingFaceEmbeddings()
+    if model == "gpt-3.5-turbo":
+        embeddings = OpenAIEmbeddings()
+    elif model == "gemini-pro":
+        embeddings = GoogleGenerativeAIEmbeddings()
+    else:
+        embeddings = HuggingFaceEmbeddings()
     return FAISS.from_documents(docs_transformed, embeddings)
 
 
 if __name__ == "__main__":
-    ingest_docs(langchain_params=None, file_names=[])
+    ingest_docs(langchain_params=None, file_names=[], model=None)

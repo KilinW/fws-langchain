@@ -8,15 +8,15 @@ response = requests.post("http://localhost:8000/agent/", json={
     "params": {
         "langchain_params": {
             "chunk_size": 200,
-            "chunk_overlap": 50
+            "chunk_overlap": 100
         },
         "model_params": {
-            "temperature": 0
+            "temperature": 0.1
         }
     },
     "regen_count": 2,
-    "file_name": ["x-100.pdf"]
+    "file_name": []
 })
 
-print("Answer:", response.json()["answer"])
-print("Reference:", response.json()["reference1"])
+print("Answer:\n", response.json()["answer"])
+print("Reference:\n", response.json()["reference1"])
