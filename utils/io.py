@@ -1,7 +1,7 @@
 from langchain.memory import ChatMessageHistory
 from langchain_core.prompts import PromptTemplate
 from pydantic import BaseModel, Field
-from typing import List
+from typing import List, Dict
 
 
 prompt = PromptTemplate(
@@ -16,15 +16,11 @@ prompt = PromptTemplate(
 )
 
 
-class ModelParams(BaseModel):
-  temperature: float
-  max_length: int
-
 class ChatRequest(BaseModel):
   input: str
   chat_history: List[str]
   model: str
-  model_params: ModelParams
+  model_params: Dict
 
 class VectorizedParams(BaseModel):
   chunk_size: int

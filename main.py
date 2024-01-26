@@ -37,11 +37,7 @@ db = ingest_docs()
 @app.post("/agent/")
 async def agent(request: ChatRequest) -> str:
   """Handle a request."""
-  try:
-    chain = get_chain(request.model, chain_type="stuff")
-
-  except Exception as e:
-    raise HTTPException(status_code=500, detail=f"ERROR!!! {str(e)}")
+  chain = get_chain(request.model, request.model_params)
   
   chat_history = generate_chat_history(request.chat_history)
 

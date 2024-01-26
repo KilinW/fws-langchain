@@ -19,8 +19,8 @@ import requests
 response = requests.post("http://localhost:8000/agent/", json={
   "input": "x-100機台未啟動怎麼辦？",
   "chat_history": [],
-  "model": "gemini-pro",
-  "model_params": {"temperature":0, "max_length":1000},
+  "model": "gpt-3.5-turbo",
+  "model_params": {"temperature":0.1, "max_tokens":5},
 })
 
 print(response.content.decode("utf-8"))
