@@ -35,9 +35,9 @@ db = ingest_docs()
 
 
 @app.post("/agent/")
-async def agent(request: ChatRequest) -> str:
+async def agent(request: ChatRequest) -> dict:
   """Handle a request."""
-  chat_history = generate_chat_history(request.chat_history)
+  chat_history = request.chat_history
 
   docs = db.similarity_search(request.input, k=2)
 
@@ -53,9 +53,17 @@ async def agent(request: ChatRequest) -> str:
     "retrieved_document": formatted_docs
   })
 
-  res = model_output + "\n\n" + reference_output
+  response_data = {
+        "model": request.model,
+        "model_params": chain.llm.model_kwargs,
+        "input": request.input,
+        "answer": model_output,
+        "reference1": formatted_docs,
+        "page": reference_output
+        #"reference2": reference2
+  }
 
-  return res
+  return response_data
 
 
 @app.post("/feedback/")
