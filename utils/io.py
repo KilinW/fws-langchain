@@ -21,6 +21,7 @@ class ChatRequest(BaseModel):
   chat_history: List[str]
   model: str
   model_params: Dict
+  langchain_params: Dict
 
 class VectorizedParams(BaseModel):
   chunk_size: int
@@ -60,3 +61,4 @@ def generate_formatted_docs(docs):
     context = doc.page_content.replace("\n", "")
     formatted_docs += f"{context}\n\n"
   return formatted_docs
+
