@@ -34,8 +34,8 @@ def ingest_docs(langchain_params: dict):
   logger.info(f"Loaded documents from SOP PDF.")
 
   text_splitter = RecursiveCharacterTextSplitter(
-    chunk_size=langchain_params["chunk_size"],
-    chunk_overlap=langchain_params["chunk_overlap"],
+    chunk_size=langchain_params.chunk_size,
+    chunk_overlap=langchain_params.chunk_overlap,
     separators=[" ", ",", "\n"],
   )
   docs_transformed = docs_from_sop_pdf.load_and_split(text_splitter=text_splitter)
