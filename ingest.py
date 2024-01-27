@@ -61,4 +61,4 @@ def ingest_docs(langchain_params: dict, file_names=None):
 
 
 if __name__ == "__main__":
-    ingest_docs(langchain_params=None, file_names=[], model=None)
+    ingest_docs(langchain_params=None, file_names=[])
