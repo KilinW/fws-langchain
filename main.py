@@ -34,7 +34,7 @@ app.add_middleware(
 @app.post("/agent/")
 async def agent(request: ChatRequest) -> dict:
   """Handle a request."""
-  db = ingest_docs(request.params.langchain_params, file_names = request.file_name, model = request.model)
+  db = ingest_docs(request.params.langchain_params, file_names = request.file_name)
   chain = get_chain(request.model, request.params.model_params.dict())
   
   chat_history = generate_chat_history(request.chat_history)
@@ -77,10 +77,6 @@ async def feedback(request):
 async def upload_file(request: FileUploadRequest):
   """Handle files upload to GCS"""
   upload_to_gcs(project_id=os.getenv("GOOGLE_CLOUD_PROJECT_ID"), url=request.url, file_name=request.file_name)
-  
-  global db
-  db = ingest_docs()
-  
   return {"message": "file uploaded successfully"}
 
 
