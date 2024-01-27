@@ -14,3 +14,6 @@ uvicorn==0.27.0
 weaviate_client==4.4b2
 google-cloud-storage==2.14.0
 langchain_google_vertexai==0.0.2
+unstructured==0.12.2
+unstructured[pdf]==0.12.2
+faiss-cpu==1.7.4
