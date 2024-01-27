@@ -77,7 +77,6 @@ async def feedback(request) -> Output:
 async def upload_file(request: FileUploadRequest):
   """Handle files upload to GCS"""
   upload_to_gcs(project_id=os.getenv("GOOGLE_CLOUD_PROJECT_ID"), url=request.url, file_name=request.file_name)
-  ingest_docs()
   return {"message": "file uploaded successfully"}
 
 
