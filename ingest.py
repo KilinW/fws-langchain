@@ -29,7 +29,7 @@ def list_files(bucket_name=os.getenv("GOOGLE_CLOUD_STORAGE_BUCKET"), project_nam
     pdf_files = [blob.name for blob in blobs if blob.name.endswith(".pdf")]
     return pdf_files
 
-def ingest_docs(langchain_params: dict, model: str, file_names=None):
+def ingest_docs(langchain_params: dict, file_names=None):
     if not file_names:
         file_names = list_files()
         logger.info(f"Defaulting to all PDF files in GCS bucket: {file_names}")
@@ -55,12 +55,8 @@ def ingest_docs(langchain_params: dict, model: str, file_names=None):
             )
         docs_transformed += text_splitter.split_documents(docs_from_sop_pdf)
 
-    if model == "gpt-3.5-turbo":
-        embeddings = OpenAIEmbeddings()
-    elif model == "gemini-pro":
-        embeddings = GoogleGenerativeAIEmbeddings()
-    else:
-        embeddings = HuggingFaceEmbeddings()
+    embeddings = OpenAIEmbeddings()
+
     return FAISS.from_documents(docs_transformed, embeddings)
 
 
